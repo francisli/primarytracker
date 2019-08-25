@@ -1,4 +1,4 @@
-# Full-Stack Starter
+# Democratic Primary Tracker
 
 This repository contains a "starter" project for web application development in JavaScript.
 
@@ -128,8 +128,8 @@ started again is the ```docker-compose up``` command.
 
 ## License
 
-Full-Stack Starter
-Copyright (C) 2019 <dev/Mission>
+Democratic Primary Tracker
+Copyright (C) 2019 Francis Li
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as

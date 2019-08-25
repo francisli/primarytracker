@@ -1,0 +1,173 @@
+#!/usr/bin/env node
+
+const csv = require('csv-parser');
+const https = require('https');
+const fs = require('fs');
+const path = require('path');
+const Writable = require('stream').Writable
+require('dotenv').config({path: path.resolve(__dirname, '../.env')});
+
+const models = require('../models');
+
+function extract() {
+  console.log('Loading latest raw data...');
+  let started = false;
+  const writable = new Writable({
+    objectMode: true,
+    write: function(data, encoding, done) {
+      started = true;
+      data.state = data.state == '' ? null : data.state;
+      data.pollster_rating_id = data.pollster_rating_id == '' ? null : data.pollster_rating_id;
+      data.start_date = new Date(data.start_date);
+      data.end_date = new Date(data.end_date);
+      data.created_at = new Date(data.created_at);
+      process.stdout.write('.');
+      models.RawResult.upsert(data)
+        .catch(function(error) {
+          done(error);
+        })
+        .then(function() {
+          done();
+        });
+    }
+  });
+  fs.createReadStream(path.resolve(__dirname, '../tmp/data.csv'))
+    .pipe(csv())
+    .pipe(writable)
+    .on('error', function(error) {
+      console.log('!!!', error);
+      process.exit(1);
+    })
+    .on('finish', function() {
+      if (started) {
+        console.log('');
+        transform().then(function() {
+          console.log('Done!');
+          process.exit();
+        });
+      }
+    });
+}
+
+async function transform() {
+  console.log('Updating pollster ratings...');
+  await models.sequelize.query('SELECT DISTINCT pollster_rating_id,pollster_rating_name,fte_grade FROM raw_results')
+    .then(function([rows, metadata]) {
+      const promises = [];
+      for (let row of rows) {
+        if (row.pollster_rating_id) {
+          row.id = row.pollster_rating_id;
+          delete row.pollster_rating_id;
+          promises.push(models.PollsterRating.upsert(row));
+        }
+      }
+      return Promise.all(promises);
+    });
+
+  console.log('Updating pollsters...');
+  await models.sequelize.query('SELECT DISTINCT pollster_id,pollster,display_name,pollster_rating_id FROM raw_results')
+    .then(function([rows, metadata]) {
+      const promises = [];
+      for (let row of rows) {
+        row.id = row.pollster_id;
+        delete row.pollster_id;
+        promises.push(models.Pollster.upsert(row));
+      }
+      return Promise.all(promises);
+    });
+
+  console.log('Updating sponsors...');
+  await models.sequelize.query('SELECT DISTINCT sponsor_ids,sponsors FROM raw_results')
+    .then(function([rows, metadata]) {
+      const promises = [];
+      for (let row of rows) {
+        if (row.sponsor_ids) {
+          let sponsorIds = row.sponsor_ids.split(',');
+          let sponsors = row.sponsors.split('|').map(function(s) { return s.trim() });
+          for (let i = 0; i < sponsorIds.length; i++) {
+            promises.push(models.Sponsor.upsert({
+              id: sponsorIds[i],
+              sponsor: sponsors[i]
+            }));
+          }
+        }
+      }
+      return Promise.all(promises);
+    });
+
+  console.log('Updating sponsors...');
+  await models.sequelize.query('SELECT DISTINCT state FROM raw_results')
+    .then(function([rows, metadata]) {
+      const promises = [];
+      for (let row of rows) {
+        if (row.state) {
+          promises.push(models.State.upsert(row));
+        }
+      }
+      return Promise.all(promises);
+    });
+
+  console.log('Updating polls...');
+  await models.sequelize.query('SELECT DISTINCT question_id,poll_id,cycle,state,pollster_id,sample_size,population,population_full,methodology,office_type,start_date,end_date,sponsor_candidate,internal,partisan,tracking,nationwide_batch,created_at,notes,url,stage,party FROM raw_results')
+    .then(function([rows, metadata]) {
+      const promises = [];
+      for (let row of rows) {
+        row.updated_at = new Date();
+        promises.push(models.Poll.upsert(row));
+      }
+      return Promise.all(promises);
+    });
+
+  console.log('Updating poll sponsors...');
+  await models.sequelize.query('SELECT DISTINCT question_id,poll_id,sponsor_ids FROM raw_results')
+    .then(function([rows, metadata]) {
+      const promises = [];
+      for (let row of rows) {
+        if (row.sponsor_ids) {
+          promises.push(models.Poll.findOne({
+            where: {
+              question_id: row.question_id,
+              poll_id: row.poll_id
+            },
+            attributes: ['id']
+          }).then(function(poll) {
+            const promises = [];
+            let sponsorIds = row.sponsor_ids.split(',');
+            for (let sponsorId of sponsorIds) {
+              promises.push(models.sequelize.query('INSERT INTO polls_sponsors (poll_id, sponsor_id) VALUES ($1, $2) ON CONFLICT (poll_id, sponsor_id) DO NOTHING', {bind: [poll.id, sponsorId]}))
+            }
+            return Promise.all(promises);
+          }));
+        }
+      }
+      return Promise.all(promises);
+    });
+
+  console.log('Updating poll results...');
+  await models.Poll.findAll().then(function(polls) {
+    const promises = [];
+    for (let poll of polls) {
+      promises.push(models.sequelize.query('SELECT answer, candidate_name, pct FROM raw_results WHERE poll_id=$1 AND question_id=$2', {bind: [poll.poll_id, poll.question_id]})
+        .then(function([rows, metadata]) {
+          return poll.update({answers: rows});
+        }));
+    }
+    return Promise.all(promises);
+  });
+}
+
+// extract();
+
+// transform().then(function() {
+//   console.log('Done!');
+//   process.exit();
+// });
+
+console.log('Downloading latest csv...');
+const file = fs.createWriteStream(path.resolve(__dirname, '../tmp/data.csv'));
+const request = https.get('https://projects.fivethirtyeight.com/polls-page/president_primary_polls.csv', function(response) {
+  response.on('end', function() {
+    extract();
+  });
+  response.pipe(file);
+});
