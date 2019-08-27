@@ -1,0 +1,77 @@
+table {
+  width: auto;
+}
+
+th {
+  text-transform: uppercase;
+  font-weight: normal;
+  font-size: .8rem;
+  position: relative;
+  border-top: 0;
+  padding-top: 3rem;
+  padding-bottom: .25rem;
+}
+
+td {
+  font-size: .8rem;
+  padding-top: .5rem;
+  padding-bottom: 0;
+  height: 1.75rem;
+  line-height: 1.75rem;
+}
+
+pre {
+  margin: 0;
+}
+
+.answer {
+  display: block;
+  position: absolute;
+  bottom: 0;
+  left: 90%;
+  padding-bottom: .25rem;
+  width: 100px;
+  transform-origin: left bottom;
+  transform: rotate(-45deg);
+  white-space: nowrap;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.rating {
+  display: inline-block;
+  border-radius: 50%;
+  border: 2px solid green;
+  width: 1.75rem;
+  height: 1.75rem;
+  line-height: 1.5rem;
+  text-align: center;
+  font-size: 80%;
+  font-weight: bold;
+}
+
+.spacer {
+  display: inline-block;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.spacer--dates {
+  width: 150px;
+  text-transform: uppercase;
+}
+
+.spacer--pollster {
+  width: 200px;
+}
+
+.spacer--sample {
+  width: 80px;
+  text-align: right;
+  text-transform: uppercase;
+}
+
+.spacer--pct {
+  width: 40px;
+  text-align: right;
+}

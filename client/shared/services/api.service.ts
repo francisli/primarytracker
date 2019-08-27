@@ -70,6 +70,12 @@ export class ApiService {
     }
   }
 
+  polls = {
+    index: (params?: HttpParams): Observable<any> => {
+      return this.get('/api/polls/', params);
+    },
+  };
+
   users = {
     me: (params?: HttpParams): Observable<any> => {
       return this.get('/api/users/me/', params);

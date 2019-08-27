@@ -10,6 +10,7 @@ module.exports = (sequelize, DataTypes) => {
   });
   Pollster.associate = function(models) {
     // associations can be defined here
+    Pollster.belongsTo(models.PollsterRating, {as: 'pollster_rating', foreignKey: 'pollster_rating_id'});
   };
   return Pollster;
 };

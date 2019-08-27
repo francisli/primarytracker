@@ -1,4 +1,7 @@
 'use strict';
+
+const sequelizePaginate = require('sequelize-paginate')
+
 module.exports = (sequelize, DataTypes) => {
   const Poll = sequelize.define('Poll', {
     question_id: DataTypes.INTEGER,
@@ -24,6 +27,7 @@ module.exports = (sequelize, DataTypes) => {
     stage: DataTypes.STRING,
     party: DataTypes.STRING,
     answers: DataTypes.JSONB,
+    answers_length: DataTypes.INTEGER,
     updated_at: DataTypes.DATE
   }, {
     indexes: [
@@ -39,7 +43,9 @@ module.exports = (sequelize, DataTypes) => {
   });
   Poll.associate = function(models) {
     // associations can be defined here
-    models.Poll.belongsToMany(models.Sponsor, {through: 'polls_sponsors'});
+    Poll.belongsTo(models.Pollster, {as: 'pollster', foreignKey: 'pollster_id'});
+    Poll.belongsToMany(models.Sponsor, {through: 'polls_sponsors'});
   };
+  sequelizePaginate.paginate(Poll)
   return Poll;
 };

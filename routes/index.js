@@ -1,12 +1,16 @@
 'use strict';
 
 const express = require('express');
+const fs = require('fs');
 const router = express.Router();
 const models = require('../models');
 
 
 router.get('/', function(req, res, next) {
-  res.render('index');
+  const webpackStats = JSON.parse(fs.readFileSync('./client/webpack-stats.json'));
+  res.render('index', {
+    webpackStats: webpackStats
+  });
 });
 
 router.get('/logout', function(req,res,next){

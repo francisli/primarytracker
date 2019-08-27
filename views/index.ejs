@@ -1,3 +1,8 @@
 <%- contentFor('title') %>Home
 <%- contentFor('body') %>
-<h1>Hello Dynamic World!</h1>
+<app-home>Loading...</app-home>
+<% for (let entry of ['home']) { %>
+  <% for (let chunk of webpackStats.chunks[entry]) { %>
+    <script type="application/javascript" src="<%= chunk.publicPath %>"></script>
+  <% } %>
+<% } %>

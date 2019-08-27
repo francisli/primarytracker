@@ -149,7 +149,7 @@ async function transform() {
     for (let poll of polls) {
       promises.push(models.sequelize.query('SELECT answer, candidate_name, pct FROM raw_results WHERE poll_id=$1 AND question_id=$2', {bind: [poll.poll_id, poll.question_id]})
         .then(function([rows, metadata]) {
-          return poll.update({answers: rows});
+          return poll.update({answers: rows, answers_length: rows.length});
         }));
     }
     return Promise.all(promises);

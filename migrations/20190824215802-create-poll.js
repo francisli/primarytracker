@@ -79,6 +79,9 @@ module.exports = {
       answers: {
         type: Sequelize.JSONB
       },
+      answers_length: {
+        type: Sequelize.INTEGER
+      },
       updated_at: {
         allowNull: false,
         type: Sequelize.DATE
