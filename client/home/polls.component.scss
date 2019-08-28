@@ -5,10 +5,10 @@ table {
 th {
   text-transform: uppercase;
   font-weight: normal;
-  font-size: .8rem;
+  font-size: .7rem;
   position: relative;
   border-top: 0;
-  padding-top: 3rem;
+  padding-top: 12rem;
   padding-bottom: .25rem;
 }
 
@@ -21,20 +21,35 @@ td {
 }
 
 pre {
+  display: inline;
   margin: 0;
 }
 
-.answer {
+.poll {
   display: block;
   position: absolute;
   bottom: 0;
-  left: 90%;
+  left: 100%;
   padding-bottom: .25rem;
-  width: 100px;
+  width: 400px;
   transform-origin: left bottom;
-  transform: rotate(-45deg);
+  transform: rotate(-35deg);
   white-space: nowrap;
   border-bottom: 1px solid #dee2e6;
+}
+
+.poll__date {
+  margin-right: 1em;
+}
+
+.poll__pollster {
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 1em;
+  max-width: 150px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .rating {
@@ -56,22 +71,15 @@ pre {
   white-space: nowrap;
 }
 
-.spacer--dates {
-  width: 150px;
-  text-transform: uppercase;
+.spacer--candidate {
+  width: 100px;
 }
 
-.spacer--pollster {
-  width: 200px;
-}
-
-.spacer--sample {
+.spacer--sparkline {
   width: 80px;
-  text-align: right;
-  text-transform: uppercase;
 }
 
-.spacer--pct {
-  width: 40px;
+.spacer--poll {
+  width: 60px;
   text-align: right;
 }

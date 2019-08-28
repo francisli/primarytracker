@@ -2,28 +2,29 @@
   <table class="table table-striped">
     <thead>
       <tr>
-        <th><span class="spacer spacer--dates">Dates</span></th>
-        <th><span class="spacer spacer--pollster">Pollster</span></th>
-        <th><span class="spacer spacer--sample">Sample</span></th>
-        <th *ngFor="let average of polls[0].averages">
-          <span class="answer">{{average.answer}}</span>
-          <span class="spacer spacer--pct"></span>
+        <th><span class="spacer spacer--candidate">Candidates</span></th>
+        <th><span class="spacer spacer--sparkline"></span></th>
+        <th>
+          <span class="spacer spacer--poll"></span>
+          <span class="poll">Last 5 average</span>
+        </th>
+        <th *ngFor="let poll of polls">
+          <span class="spacer spacer--poll"></span>
+          <span class="poll">
+            <span class="poll__date text-muted">{{poll.start_date|date:'MMM d'}}-<span *ngIf="(poll.start_date|date:'MMM')==(poll.end_date|date:'MMM')">{{poll.end_date|date:'d, y'}}</span><span *ngIf="(poll.start_date|date:'MMM')!=(poll.end_date|date:'MMM')">{{poll.end_date|date:'MMM d, y'}}</span></span>
+            <span class="poll__pollster"><span class="rating">{{poll.pollster?.pollster_rating?.fte_grade}}</span> {{poll.pollster?.display_name}}</span>
+            <pre class="poll__sample">{{poll.sample_size|number}} {{poll.population}}</pre>
+          </span>
         </th>
       </tr>
     </thead>
     <tbody>
-      <tr class="table-averages">
-        <td colspan="3">Last 5 average</td>
-        <td *ngFor="let average of polls[0].averages" class="text-right">
-          <span class="spacer spacer--pct"><pre>{{average.pct|number:'1.0-1'}}<span class="text-muted">%</span></pre></span>
-        </td>
-      </tr>
-      <tr *ngFor="let poll of polls">
-        <td><span class="spacer spacer--dates text-muted">{{poll.start_date|date:'MMM d'}}-<span *ngIf="(poll.start_date|date:'MMM')==(poll.end_date|date:'MMM')">{{poll.end_date|date:'d, y'}}</span><span *ngIf="(poll.start_date|date:'MMM')!=(poll.end_date|date:'MMM')">{{poll.end_date|date:'MMM d, y'}}</span></span></td>
-        <td><span class="spacer spacer--pollster"><span class="rating">{{poll.pollster?.pollster_rating?.fte_grade}}</span> {{poll.pollster?.display_name}}</span></td>
-        <td><span class="spacer spacer--sample"><pre>{{poll.sample_size|number}} {{poll.population}}</pre></span></td>
-        <td *ngFor="let average of polls[0].averages">
-          <span class="spacer spacer--pct"><pre>{{answerFor(average, poll.answers).pct|number:'1.0-1'}}<span class="text-muted">%</span></pre></span>
+      <tr *ngFor="let ranking of rankings; index as i;" [class.d-none]="i >= numVisible">
+        <td><span class="spacer spacer--candidate">{{i+1}}. {{ranking.answer}}</span></td>
+        <td><span class="spacer spacer--sparkline"></span></td>
+        <td><span class="spacer spacer--poll"><pre>{{ranking.pct|number:'1.0-1'}}<span class="text-muted">%</span></pre></span></td>
+        <td *ngFor="let pct of ranking.polls">
+          <span class="spacer spacer--poll"><pre>{{pct|number:'1.0-1'}}<span class="text-muted">%</span></pre></span>
         </td>
       </tr>
     </tbody>
