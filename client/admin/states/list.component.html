@@ -1,0 +1,22 @@
+<router-outlet></router-outlet>
+<div [class.d-none]="route.firstChild">
+  <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
+    <h1 class="h2">States</h1>
+  </div>
+  <app-shared-list type="states">
+    <thead>
+      <tr>
+        <th>State</th>
+        <th>Primary Date</th>
+        <th>Primary Type</th>
+      </tr>
+    </thead>
+    <ng-template let-record="record">
+      <tr>
+        <td><a [routerLink]="['/states', record.id]">{{record.state}}</a></td>
+        <td><a [routerLink]="['/states', record.id]">{{record.primary_date}}</a></td>
+        <td><a [routerLink]="['/states', record.id]">{{record.primary_type}}</a></td>
+      </tr>
+    </ng-template>
+  </app-shared-list>
+</div>

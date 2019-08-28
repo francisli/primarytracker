@@ -76,6 +76,18 @@ export class ApiService {
     },
   };
 
+  states = {
+    index: (params?: HttpParams): Observable<any> => {
+      return this.get('/api/states/', params);
+    },
+    get: (id: string, params?: HttpParams): Observable<any> => {
+      return this.get(`/api/states/${id}`, params);
+    },
+    update: (id: string, data: any): Observable<any> => {
+      return this.patch(`/api/states/${id}`, data);
+    },
+  };
+
   users = {
     me: (params?: HttpParams): Observable<any> => {
       return this.get('/api/users/me/', params);

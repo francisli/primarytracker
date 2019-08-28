@@ -1,0 +1,39 @@
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+  <h1 class="h2">Edit State</h1>
+</div>
+<div class="row">
+  <div class="col-md-6">
+    <app-shared-form *ngIf="id" type="states" [id]="id">
+      <ng-template let-record="record" let-error="error">
+        <div class="form-group">
+          <label for="state">State</label>
+          <input readonly [(ngModel)]="record.state" [class.is-invalid]="error.messages|error:'state'" type="text" class="form-control" id="state" name="state">
+          <div *ngIf="error.messages|error:'state'" class="invalid-feedback">{{(error.messages|error:'state').message}}</div>
+        </div>
+        <div class="form-group">
+          <label for="primary_date">Primary Date</label>
+          <input [(ngModel)]="record.primary_date" [class.is-invalid]="error.messages|error:'primary_date'" type="date" class="form-control" id="primary_date" name="primary_date">
+          <div *ngIf="error.messages|error:'primary_date'" class="invalid-feedback">{{(error.messages|error:'primary_date').message}}</div>
+        </div>
+        <div class="form-group">
+          <label for="primary_type">Primary Type</label>
+          <select [(ngModel)]="record.primary_type" [class.is-invalid]="error.messages|error:'primary_type'" class="form-control" id="primary_type" name="primary_type">
+            <option value="CAUCUS">Caucus</option>
+            <option value="ELECTION">Election</option>
+          </select>
+          <div *ngIf="error.messages|error:'primary_type'" class="invalid-feedback">{{(error.messages|error:'primary_type').message}}</div>
+        </div>
+        <div class="form-group">
+          <label for="pledged_delegates">Pledged Delegates</label>
+          <input [(ngModel)]="record.pledged_delegates" [class.is-invalid]="error.messages|error:'pledged_delegates'" type="number" class="form-control" id="pledged_delegates" name="pledged_delegates">
+          <div *ngIf="error.messages|error:'pledged_delegates'" class="invalid-feedback">{{(error.messages|error:'pledged_delegates').message}}</div>
+        </div>
+        <div class="form-group">
+          <label for="automatic_delegates">Automatic Delegates</label>
+          <input [(ngModel)]="record.automatic_delegates" [class.is-invalid]="error.messages|error:'automatic_delegates'" type="number" class="form-control" id="automatic_delegates" name="automatic_delegates">
+          <div *ngIf="error.messages|error:'automatic_delegates'" class="invalid-feedback">{{(error.messages|error:'automatic_delegates').message}}</div>
+        </div>
+      </ng-template>
+    </app-shared-form>
+  </div>
+</div>
