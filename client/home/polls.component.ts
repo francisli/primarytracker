@@ -16,7 +16,7 @@ export class PollsComponent {
   @Input() state: string = null;
   polls: any[] = null;
   rankings: any[] = null;
-  numVisible = 10;
+  numVisible = 3;
 
   constructor(private api: ApiService) {}
 
@@ -32,7 +32,7 @@ export class PollsComponent {
         //// collect poll percentages for each ranked candidate
         for (let poll of this.polls) {
           for (let ranking of rankings) {
-            let answer = this.answerFor(ranking, poll.answers);
+            let answer = find(poll.answers, {candidate_name: ranking.candidate_name}) as any;
             ranking.polls = ranking.polls || [];
             ranking.polls.push(answer.pct);
           }
@@ -42,7 +42,11 @@ export class PollsComponent {
     });
   }
 
-  answerFor(average: any, answers: any[]): any {
-    return find(answers, {candidate_name: average.candidate_name});
+  showMore() {
+    if (this.numVisible < 10) {
+      this.numVisible = 10;
+    } else {
+      this.numVisible = Math.min(this.rankings.length, this.numVisible + 10);
+    }
   }
 }
