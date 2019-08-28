@@ -10,7 +10,7 @@ router.get('/', function(req, res, next) {
   models.Poll.paginate({
     page: req.query.page || 1,
     paginate: 5,
-    order: [['end_date', 'DESC']],
+    order: [['end_date', 'DESC'], ['start_date', 'DESC'], ['poll_id', 'DESC'], ['question_id', 'DESC']],
     where: { state: req.query.state ? req.query.state : null, party: 'DEM', answers_length: { [models.Sequelize.Op.gt]: 2 } },
     include: [{model: models.Pollster, as: 'pollster', include: ['pollster_rating']}]
   }).then(function({docs, pages, total}) {

@@ -28,6 +28,8 @@ module.exports = (sequelize, DataTypes) => {
     party: DataTypes.STRING,
     answers: DataTypes.JSONB,
     answers_length: DataTypes.INTEGER,
+    averages: DataTypes.JSONB,
+    averages_length: DataTypes.INTEGER,
     updated_at: DataTypes.DATE
   }, {
     indexes: [

@@ -82,6 +82,12 @@ module.exports = {
       answers_length: {
         type: Sequelize.INTEGER
       },
+      averages: {
+        type: Sequelize.JSONB
+      },
+      averages_length: {
+        type: Sequelize.INTEGER
+      },
       updated_at: {
         allowNull: false,
         type: Sequelize.DATE

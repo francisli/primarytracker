@@ -3,6 +3,7 @@
 const csv = require('csv-parser');
 const https = require('https');
 const fs = require('fs');
+const _ = require('lodash');
 const path = require('path');
 const Writable = require('stream').Writable
 require('dotenv').config({path: path.resolve(__dirname, '../.env')});
@@ -151,6 +152,68 @@ async function transform() {
         .then(function([rows, metadata]) {
           return poll.update({answers: rows, answers_length: rows.length});
         }));
+    }
+    return Promise.all(promises);
+  });
+
+  const calculateAverages = function(polls) {
+    const promises = [];
+    let length = polls.length;
+    for (let i = 0; i < length; i++) {
+      let poll = polls[i];
+      let averages = _.cloneDeep(poll.answers);
+      let endIndex = Math.min(i + 5, length)
+      for (let j = i + 1; j < endIndex; j++) {
+        averages = _.filter(averages, (average) => {
+          let answer = _.find(polls[j].answers, {candidate_name: average.candidate_name});
+          if (answer) {
+            average.pct += answer.pct;
+          }
+          return answer;
+        });
+      }
+      for (let average of averages) {
+        average.pct /= endIndex - i;
+      }
+      averages.sort(function(a, b) {
+        if (a.pct < b.pct) {
+          return 1;
+        }
+        if (a.pct > b.pct) {
+          return -1;
+        }
+        if (a.answer < b.answer) {
+          return -1;
+        }
+        if (a.answer > b.answer) {
+          return 1;
+        }
+        return 0;
+      });
+      promises.push(poll.update({averages: averages, averages_length: averages.length}));
+    }
+    return Promise.all(promises);
+  }
+
+  console.log('Updating running averages national polls...');
+  await models.Poll.findAll({
+    where: { state: null, party: 'DEM', answers_length: { [models.Sequelize.Op.gt]: 2 } },
+    order: [['end_date', 'DESC'], ['start_date', 'DESC'], ['poll_id', 'DESC'], ['question_id', 'DESC']]
+  }).then(function(polls) {
+    return calculateAverages(polls);
+  });
+
+  console.log('Updating running averages for states...');
+  await models.State.findAll().then(function(states) {
+    const promises = [];
+    for (let state of states) {
+      promises.push(models.Poll.findAll({
+        where: { state: state.state, party: 'DEM', answers_length: { [models.Sequelize.Op.gt]: 2 } },
+        order: [['end_date', 'DESC'], ['start_date', 'DESC'], ['poll_id', 'DESC'], ['question_id', 'DESC']]
+      }).then(function(polls) {
+        console.log('    ' + state.state);
+        return calculateAverages(polls);
+      }));
     }
     return Promise.all(promises);
   });
