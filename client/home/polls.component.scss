@@ -5,7 +5,7 @@ table {
 th {
   text-transform: uppercase;
   font-weight: normal;
-  font-size: .7rem;
+  font-size: .75rem;
   position: relative;
   border-top: 0;
   padding-top: 12rem;
@@ -13,7 +13,8 @@ th {
 }
 
 td {
-  font-size: .8rem;
+  font-size: .75rem;
+  line-height: .875rem;
 }
 
 pre {
@@ -23,6 +24,18 @@ pre {
 
 a {
   cursor: pointer;
+}
+
+td.sparkline {
+  position: relative;
+}
+
+img.sparkline {
+  position: absolute;
+  top: .3rem;
+  left: .75rem;
+  width: 120px;
+  height: 30px;
 }
 
 .poll {
@@ -76,7 +89,8 @@ a {
 }
 
 .spacer--sparkline {
-  width: 80px;
+  position: relative;
+  width: 120px;
 }
 
 .spacer--poll {

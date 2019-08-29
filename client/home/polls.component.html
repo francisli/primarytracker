@@ -2,8 +2,8 @@
   <table class="table table-striped">
     <thead>
       <tr>
-        <th><span class="spacer spacer--candidate">Candidates</span></th>
-        <th><span class="spacer spacer--sparkline"></span></th>
+        <th><span class="spacer spacer--candidate">Candidate</span></th>
+        <th><span class="spacer spacer--sparkline">Running Average</span></th>
         <th>
           <span class="spacer spacer--poll"></span>
           <span class="poll">Last 5 average</span>
@@ -22,7 +22,10 @@
       <ng-container *ngFor="let ranking of rankings; index as i;">
         <tr *ngIf="i < numVisible">
           <td><span class="spacer spacer--candidate">{{i+1}}. {{ranking.answer}}</span></td>
-          <td><span class="spacer spacer--sparkline"></span></td>
+          <td class="sparkline">
+            <span class="spacer spacer--sparkline"></span>
+            <img [src]="sparklinePath(ranking.candidate_name)" class="sparkline">
+          </td>
           <td><span class="spacer spacer--poll"><pre>{{ranking.pct|number:'1.0-1'}}<span class="text-muted">%</span></pre></span></td>
           <td *ngFor="let pct of ranking.polls">
             <span class="spacer spacer--poll"><pre>{{pct|number:'1.0-1'}}<span class="text-muted">%</span></pre></span>

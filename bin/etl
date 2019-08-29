@@ -1,11 +1,17 @@
 #!/usr/bin/env node
 
+const AnyChart = require('anychart');
+const AnyChartExport = require('anychart-nodejs');
 const csv = require('csv-parser');
-const https = require('https');
 const fs = require('fs');
+const https = require('https');
+const inflection = require('inflection');
+const JSDOM = require('jsdom').JSDOM;
 const _ = require('lodash');
+const mkdirp = require('mkdirp');
 const path = require('path');
 const Writable = require('stream').Writable
+
 require('dotenv').config({path: path.resolve(__dirname, '../.env')});
 
 const models = require('../models');
@@ -96,7 +102,7 @@ async function transform() {
       return Promise.all(promises);
     });
 
-  console.log('Updating sponsors...');
+  console.log('Updating states...');
   await models.sequelize.query('SELECT DISTINCT state FROM raw_results')
     .then(function([rows, metadata]) {
       const promises = [];
@@ -216,6 +222,90 @@ async function transform() {
       }));
     }
     return Promise.all(promises);
+  });
+
+  const generateSparkline = function(state, candidate, data) {
+    const jsdom = new JSDOM('<body><div id="container"></div></body>', {runScripts: 'dangerously'});
+    const window = jsdom.window;
+    const anychart = AnyChart(window);
+    const anychartExport = AnyChartExport(anychart);
+
+    const chart = anychart.sparkline(data);
+    chart.bounds(0, 0, 240, 60);
+    chart.container('container');
+    chart.background().fill("#00000000");
+    chart.draw();
+
+    const promise = new Promise(function(resolve, reject) {
+      const dir = path.resolve(__dirname, '../public/images/sparklines', inflection.dasherize(state.toLowerCase()));
+      mkdirp.sync(dir);
+      anychartExport.exportTo(chart, 'svg')
+        .catch(function(error) {
+          reject(error);
+        })
+        .then(function(image) {
+          const filename = inflection.dasherize(candidate.replace(/[.']/g, '').toLowerCase());
+          fs.writeFile(path.resolve(dir, `${filename}.svg`), image, function(error) {
+            if (error) {
+              reject(error);
+            } else {
+              resolve();
+            }
+          });
+        });
+    });
+    return promise;
+  }
+
+  console.log('Generating sparkline charts for the national running average...');
+  await models.Poll.findAll({
+    where: { state: null, party: 'DEM', answers_length: { [models.Sequelize.Op.gt]: 2 } },
+    order: [['end_date', 'ASC'], ['start_date', 'ASC'], ['poll_id', 'ASC'], ['question_id', 'ASC']]
+  }).then(function(polls) {
+    const promises = [];
+    const data = {};
+    for (let poll of polls) {
+      for (let average of poll.averages) {
+        data[average.candidate_name] = data[average.candidate_name] || [];
+        data[average.candidate_name].push(average.pct);
+      }
+    }
+    for (let candidate in data) {
+      promises.push(generateSparkline('national', candidate, data[candidate]));
+    }
+    return promises.reduce((sequence, promise) => {
+      return sequence.then(results => promise.then(result => [...results, result]));
+    }, Promise.resolve([]));
+  });
+
+  console.log('Generating sparkline charts for the states...');
+  await models.State.findAll().then(function(states) {
+    const promises = [];
+    for (let state of states) {
+      promises.push(models.Poll.findAll({
+        where: { state: state.state, party: 'DEM', answers_length: { [models.Sequelize.Op.gt]: 2 } },
+        order: [['end_date', 'ASC'], ['start_date', 'ASC'], ['poll_id', 'ASC'], ['question_id', 'ASC']]
+      }).then(function(polls) {
+        console.log('    ' + state.state);
+        const promises = [];
+        const data = {};
+        for (let poll of polls) {
+          for (let average of poll.averages) {
+            data[average.candidate_name] = data[average.candidate_name] || [];
+            data[average.candidate_name].push(average.pct);
+          }
+        }
+        for (let candidate in data) {
+          promises.push(generateSparkline(state.state, candidate, data[candidate]));
+        }
+        return promises.reduce((sequence, promise) => {
+          return sequence.then(results => promise.then(result => [...results, result]));
+        }, Promise.resolve([]));
+      }));
+    }
+    return promises.reduce((sequence, promise) => {
+      return sequence.then(results => promise.then(result => [...results, result]));
+    }, Promise.resolve([]));
   });
 }
 

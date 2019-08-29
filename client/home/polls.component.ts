@@ -2,6 +2,8 @@ import { Component, Input } from '@angular/core';
 import { HttpParams } from '@angular/common/http';
 
 import { ApiService } from '../shared/services';
+
+import inflection from 'inflection';
 import cloneDeep from 'lodash/cloneDeep';
 import filter from 'lodash/filter';
 import find from 'lodash/find';
@@ -40,6 +42,17 @@ export class PollsComponent {
         this.rankings = rankings;
       }
     });
+  }
+
+  sparklinePath(candidate: string) {
+    let path = this.state;
+    if (path) {
+      path = `/images/sparklines/${inflection.dasherize(path.toLowerCase())}`;
+    } else {
+      path = '/images/sparklines/national';
+    }
+    path = `${path}/${inflection.dasherize(candidate.replace(/[.']/g, '').toLowerCase())}.svg`;
+    return path;
   }
 
   showMore() {
