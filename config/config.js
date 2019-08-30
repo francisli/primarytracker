@@ -6,9 +6,11 @@ module.exports = {
     "logging": false
   },
   "test": {
-    "use_env_variable": "DATABASE_TEST_URL"
+    "use_env_variable": "DATABASE_TEST_URL",
+    "logging": false
   },
   "production": {
-    "use_env_variable": "DATABASE_URL"
+    "use_env_variable": "DATABASE_URL",
+    "logging": false
   }
 };
