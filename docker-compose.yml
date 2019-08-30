@@ -1,28 +1,35 @@
-version: '2'
+version: '2.3'
 services:
   db:
     image: postgres:11
-  mailcatcher:
-    image: dockage/mailcatcher:0.7.1
-    ports:
-      - 1080:1080
-      - 1025:1025
+  cron:
+    build: .
+    image: francisli/primarytracker
+    environment:
+      - DATABASE_URL=postgres://postgres:@db/app
+      - NODE_ENV=production
+    depends_on:
+      - db
   server:
     build: .
-    command: bash -l -c "nf start -j Procfile.dev"
-    volumes:
-      - .:/opt/node/app
-      - /opt/node/app/node_modules
+    image: francisli/primarytracker
+    command: bash -l -c "npm start"
     environment:
-      - SMTP_HOST=mailcatcher
-      - SMTP_PORT=1025
-      - SMTP_USERNAME=none
-      - SMTP_PASSWORD=none
-      - PORT=3000
+      - APP_NAME=${APP_NAME}
+      - ASSET_HOST=${ASSET_HOST}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_S3_BASE_URL=${AWS_S3_BASE_URL}
+      - AWS_S3_BUCKET=${AWS_S3_BUCKET}
+      - AWS_S3_BUCKET_REGION=${AWS_S3_BUCKET_REGION}
+      - BASE_HOST=${BASE_HOST}
+      - BASE_URL=${BASE_URL}
       - DATABASE_URL=postgres://postgres@db/app
+      - NODE_ENV=production
+      - PORT=3000
+      - SESSION_SECRET=${SESSION_SECRET}
+      - SMTP_FROM_EMAIL_ADDRESS=${SMTP_FROM_EMAIL_ADDRESS}
     ports:
-      - 3000:3000
-      - 3001:3001
-      - 8080:8080
+      - ${HOST_PORT:-3000}:3000
     depends_on:
       - db

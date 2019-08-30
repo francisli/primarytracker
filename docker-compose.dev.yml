@@ -1,0 +1,23 @@
+version: '2.3'
+services:
+  mailcatcher:
+    image: dockage/mailcatcher:0.7.1
+    ports:
+      - 1080:1080
+      - 1025:1025
+  server:
+    command: bash -l -c "nf start -j Procfile.dev"
+    environment:
+      - NODE_ENV=development
+      - SMTP_HOST=mailcatcher
+      - SMTP_PORT=1025
+      - SMTP_USERNAME=none
+      - SMTP_PASSWORD=none
+      - PORT=3000
+    ports:
+      - 3000:3000
+      - 3001:3001
+      - 8080:8080
+    volumes:
+      - .:/opt/node/app
+      - /opt/node/app/node_modules

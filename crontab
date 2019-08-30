@@ -1,0 +1,2 @@
+PATH=/opt/node/app/node_modules/.bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+0 * * * * /opt/node/app/bin/etl > /proc/1/fd/1 2>/proc/1/fd/2

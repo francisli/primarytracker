@@ -1,4 +1,9 @@
 <%- contentFor('title') %>Home
+<%- contentFor('head') %>
+<base href="/">
+<script type="text/javascript">
+window.env = {};
+</script>
 <%- contentFor('body') %>
 <app-home>Loading...</app-home>
 <% for (let entry of ['home']) { %>

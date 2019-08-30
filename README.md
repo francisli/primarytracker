@@ -45,7 +45,7 @@ although it could be adapted to handle any year/party.
 6. Open a command-line shell, change into your repo directory, and execute this command:
 
    ```
-   $ docker-compose up
+   $ npm run dcup
    ```
 
    It will take a while the first time you run this command to build the "images" to
@@ -64,7 +64,7 @@ although it could be adapted to handle any year/party.
    this command to log in to the running server container:
 
    ```
-   $ docker-compose exec server bash -l
+   $ npm run dcexec
    ```
 
    Whenever the server container is running, you can execute this command to log in
@@ -100,7 +100,7 @@ although it could be adapted to handle any year/party.
    run the following command and wait for the output to report DONE:
 
    ```
-   $ docker-compose stop
+   $ npm run dcstop
    Stopping primarytracker_db_1          ... done
    Stopping primarytracker_server_1      ... done
    Stopping primarytracker_mailcatcher_1 ... done

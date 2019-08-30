@@ -28,4 +28,4 @@ import { ApiService } from '../shared/services';
     AppComponent
   ]
 })
-export class AppModule {}
+export class HomeAppModule {}
