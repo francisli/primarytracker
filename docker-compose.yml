@@ -5,7 +5,7 @@ services:
   cron:
     build: .
     image: francisli/primarytracker
-    command: bash -l -c "cron -f"
+    command: bash -l -c "bin/cron"
     environment:
       - DATABASE_URL=postgres://postgres:@db/app
       - NODE_ENV=production

@@ -1,0 +1,5 @@
+#!/bin/bash
+envsubst < crontab > crontab.expanded
+crontab crontab.expanded
+rm crontab.expanded
+cron -f
