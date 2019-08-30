@@ -1,6 +1,7 @@
-# Democratic Primary Tracker
+# Primary Tracker
 
-This repository contains a "starter" project for web application development in JavaScript.
+This web application was created to track the 2020 Democratic Primary polls,
+although it could be adapted to handle any year/party.
 
 ## Getting Started
 
@@ -8,8 +9,8 @@ This repository contains a "starter" project for web application development in 
    into the directory.
 
    ```
-   $ git clone git@github.com:dev-mission/full-stack-starter.git
-   $ cd full-stack-starter
+   $ git clone git@github.com:francisli/primarytracker.git
+   $ cd primarytracker
    ```
 
 2. After cloning, your "local" repo (in this directory on your computer) will be linked to the "remote"
@@ -84,9 +85,9 @@ This repository contains a "starter" project for web application development in 
    If it is successful, you will see something like this:
 
    ```
-   Killing full-stack-starter_db_1           ... done
-   Killing full-stack-starter_server_1       ... done
-   Killing full-stack-starter_mailcatcher_1  ... done
+   Killing primarytracker_db_1           ... done
+   Killing primarytracker_server_1       ... done
+   Killing primarytracker_mailcatcher_1  ... done
    ```
 
    If it is not successful, you may see something like this:
@@ -100,9 +101,9 @@ This repository contains a "starter" project for web application development in 
 
    ```
    $ docker-compose stop
-   Stopping full-stack-starter_db_1          ... done
-   Stopping full-stack-starter_server_1      ... done
-   Stopping full-stack-starter_mailcatcher_1 ... done
+   Stopping primarytracker_db_1          ... done
+   Stopping primarytracker_server_1      ... done
+   Stopping primarytracker_mailcatcher_1 ... done
    ```
 
 10. That's it! After all this setup is complete, the only command you need to run to get
@@ -128,7 +129,7 @@ started again is the ```docker-compose up``` command.
 
 ## License
 
-Democratic Primary Tracker
+Primary Tracker
 Copyright (C) 2019 Francis Li
 
 This program is free software: you can redistribute it and/or modify

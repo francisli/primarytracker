@@ -2,13 +2,55 @@
   <div class="row">
     <div class="col">
       <h1>Democratic Primary Polls Tracker</h1>
-      <p>Data from <a href="https://github.com/fivethirtyeight/data/tree/master/polls" target="_blank">FiveThirtyEight</a>. Source code on <a href="https://github.com/francisli/demprimarytracker" target="_blank">GitHub</a>. Feedback? <a href="https://github.com/francisli/demprimarytracker/issues">Create a new Issue.</a></p>
-      <h2>National</h2>
+      <p class="about">Data from <a href="https://github.com/fivethirtyeight/data/tree/master/polls" target="_blank">FiveThirtyEight</a>. Source code on <a href="https://github.com/francisli/primarytracker" target="_blank">GitHub</a>. Feedback? <a href="https://github.com/francisli/primarytracker/issues">Create a new Issue.</a></p>
+      <div class="header">
+        <h2>National</h2>
+        <div class="header__box">
+          <div class="header__box__top">Convention</div>
+          <div class="header__box__bottom">
+            <div class="header__box__bottom__header">Jul</div>
+            <div class="header__box__bottom__text">13 - 16</div>
+          </div>
+        </div>
+        &nbsp;
+        <div class="header__box header__box--delegates">
+          <div class="header__box__top">Delegates</div>
+          <div class="header__box__bottom">
+            <div class="header__box__bottom__header">Pledged</div>
+            <div class="header__box__bottom__text">3,768</div>
+          </div>
+          <div class="header__box__bottom">
+            <div class="header__box__bottom__header">Super</div>
+            <div class="header__box__bottom__text">764</div>
+          </div>
+        </div>
+      </div>
       <app-polls></app-polls>
-      <h2>Iowa</h2>
-      <app-polls state="Iowa"></app-polls>
-      <h2>New Hampshire</h2>
-      <app-polls state="New Hampshire"></app-polls>
+      <ng-container *ngFor="let state of states">
+        <div class="header">
+          <h2>{{state.state}}</h2>
+          <div class="header__box header__box--primary">
+            <div class="header__box__top">{{state.primary_type}}</div>
+            <div class="header__box__bottom">
+              <div class="header__box__bottom__header">{{state.primary_date|date:'MMM'}}</div>
+              <div class="header__box__bottom__text">{{state.primary_date|date:'d'}}</div>
+            </div>
+          </div>
+          &nbsp;
+          <div class="header__box header__box--delegates">
+            <div class="header__box__top">Delegates</div>
+            <div class="header__box__bottom">
+              <div class="header__box__bottom__header">Pledged</div>
+              <div class="header__box__bottom__text">{{state.pledged_delegates}}</div>
+            </div>
+            <div class="header__box__bottom">
+              <div class="header__box__bottom__header">Super</div>
+              <div class="header__box__bottom__text">{{state.automatic_delegates}}</div>
+            </div>
+          </div>
+        </div>
+        <app-polls [state]="state.state"></app-polls>
+      </ng-container>
     </div>
   </div>
 </div>

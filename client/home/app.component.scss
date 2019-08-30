@@ -1,0 +1,65 @@
+.about {
+  margin-bottom: 4rem;
+}
+
+app-polls {
+  display: block;
+  margin-bottom: 3em;
+}
+
+.header {
+  position: absolute;
+  z-index: 1000000;
+}
+
+.header__box {
+  display: inline-block;
+  background: white;
+}
+
+.header__box__top {
+  background: #dee2e6;
+  font-size: .75rem;
+  font-weight: bold;
+  text-align: center;
+  padding: .125rem 0;
+  text-transform: uppercase;
+}
+
+.header__box__bottom {
+  border-left: 1px solid #dee2e6;
+  border-right: 1px solid #dee2e6;
+  border-bottom: 1px solid #dee2e6;
+  padding: .5rem;
+}
+
+.header__box__bottom__header {
+  text-align: center;
+  text-transform: uppercase;
+  font-size: .625rem;
+  font-weight: bold;
+}
+
+.header__box__bottom__text {
+  text-align: center;
+  font-weight: 600;
+  font-size: 1.75rem;
+  line-height: 1em;
+}
+
+.header__box--primary {
+  width: 80px;
+}
+
+.header__box--delegates {
+  width: 200px;
+
+  .header__box__bottom {
+    display: inline-block;
+    width: 100px;
+
+    &:last-child {
+      border-left-color: transparent;
+    }
+  }
+}

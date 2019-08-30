@@ -59,127 +59,107 @@ function extract() {
 async function transform() {
   console.log('Updating pollster ratings...');
   await models.sequelize.query('SELECT DISTINCT pollster_rating_id,pollster_rating_name,fte_grade FROM raw_results')
-    .then(function([rows, metadata]) {
-      const promises = [];
+    .then(async function([rows, metadata]) {
       for (let row of rows) {
         if (row.pollster_rating_id) {
           row.id = row.pollster_rating_id;
           delete row.pollster_rating_id;
-          promises.push(models.PollsterRating.upsert(row));
+          await models.PollsterRating.upsert(row);
         }
       }
-      return Promise.all(promises);
     });
 
   console.log('Updating pollsters...');
   await models.sequelize.query('SELECT DISTINCT pollster_id,pollster,display_name,pollster_rating_id FROM raw_results')
-    .then(function([rows, metadata]) {
-      const promises = [];
+    .then(async function([rows, metadata]) {
       for (let row of rows) {
         row.id = row.pollster_id;
         delete row.pollster_id;
-        promises.push(models.Pollster.upsert(row));
+        await models.Pollster.upsert(row);
       }
-      return Promise.all(promises);
     });
 
   console.log('Updating sponsors...');
   await models.sequelize.query('SELECT DISTINCT sponsor_ids,sponsors FROM raw_results')
-    .then(function([rows, metadata]) {
-      const promises = [];
+    .then(async function([rows, metadata]) {
       for (let row of rows) {
         if (row.sponsor_ids) {
           let sponsorIds = row.sponsor_ids.split(',');
           let sponsors = row.sponsors.split('|').map(function(s) { return s.trim() });
           for (let i = 0; i < sponsorIds.length; i++) {
-            promises.push(models.Sponsor.upsert({
+            await models.Sponsor.upsert({
               id: sponsorIds[i],
               sponsor: sponsors[i]
-            }));
+            });
           }
         }
       }
-      return Promise.all(promises);
     });
 
   console.log('Updating states...');
   await models.sequelize.query('SELECT DISTINCT state FROM raw_results')
-    .then(function([rows, metadata]) {
-      const promises = [];
+    .then(async function([rows, metadata]) {
       for (let row of rows) {
         if (row.state) {
-          promises.push(models.State.upsert(row));
+          await models.State.upsert(row);
         }
       }
-      return Promise.all(promises);
     });
 
   console.log('Updating polls...');
   await models.sequelize.query('SELECT DISTINCT question_id,poll_id,cycle,state,pollster_id,sample_size,population,population_full,methodology,office_type,start_date,end_date,sponsor_candidate,internal,partisan,tracking,nationwide_batch,created_at,notes,url,stage,party FROM raw_results')
-    .then(function([rows, metadata]) {
-      const promises = [];
+    .then(async function([rows, metadata]) {
       for (let row of rows) {
         row.updated_at = new Date();
-        promises.push(models.Poll.upsert(row));
+        await models.Poll.upsert(row);
       }
-      return Promise.all(promises);
     });
 
   console.log('Updating poll sponsors...');
   await models.sequelize.query('SELECT DISTINCT question_id,poll_id,sponsor_ids FROM raw_results')
-    .then(function([rows, metadata]) {
-      const promises = [];
+    .then(async function([rows, metadata]) {
       for (let row of rows) {
         if (row.sponsor_ids) {
-          promises.push(models.Poll.findOne({
+          const poll = await models.Poll.findOne({
             where: {
               question_id: row.question_id,
               poll_id: row.poll_id
             },
             attributes: ['id']
-          }).then(function(poll) {
-            const promises = [];
-            let sponsorIds = row.sponsor_ids.split(',');
-            for (let sponsorId of sponsorIds) {
-              promises.push(models.sequelize.query('INSERT INTO polls_sponsors (poll_id, sponsor_id) VALUES ($1, $2) ON CONFLICT (poll_id, sponsor_id) DO NOTHING', {bind: [poll.id, sponsorId]}))
-            }
-            return Promise.all(promises);
-          }));
+          });
+          let sponsorIds = row.sponsor_ids.split(',');
+          for (let sponsorId of sponsorIds) {
+            await models.sequelize.query('INSERT INTO polls_sponsors (poll_id, sponsor_id) VALUES ($1, $2) ON CONFLICT (poll_id, sponsor_id) DO NOTHING', {bind: [poll.id, sponsorId]});
+          }
         }
       }
-      return Promise.all(promises);
     });
 
   console.log('Updating poll results...');
-  await models.Poll.findAll().then(function(polls) {
-    const promises = [];
+  await models.Poll.findAll().then(async function(polls) {
     for (let poll of polls) {
-      promises.push(models.sequelize.query('SELECT answer, candidate_name, pct FROM raw_results WHERE poll_id=$1 AND question_id=$2', {bind: [poll.poll_id, poll.question_id]})
-        .then(function([rows, metadata]) {
-          return poll.update({answers: rows, answers_length: rows.length});
-        }));
+      const [rows, metadata] = await models.sequelize.query('SELECT answer, candidate_name, pct FROM raw_results WHERE poll_id=$1 AND question_id=$2', {bind: [poll.poll_id, poll.question_id]})
+      await poll.update({answers: rows, answers_length: rows.length});
     }
-    return Promise.all(promises);
   });
 
-  const calculateAverages = function(polls) {
-    const promises = [];
+  const calculateAverages = async function(polls) {
     let length = polls.length;
     for (let i = 0; i < length; i++) {
       let poll = polls[i];
       let averages = _.cloneDeep(poll.answers);
-      let endIndex = Math.min(i + 5, length)
-      for (let j = i + 1; j < endIndex; j++) {
-        averages = _.filter(averages, (average) => {
+      for (let average of averages) {
+        let count = 1;
+        let j = i + 1;
+        while (j < length && count < 5) {
           let answer = _.find(polls[j].answers, {candidate_name: average.candidate_name});
           if (answer) {
             average.pct += answer.pct;
+            count += 1;
           }
-          return answer;
-        });
-      }
-      for (let average of averages) {
-        average.pct /= endIndex - i;
+          j += 1;
+        }
+        average.pct /= count;
       }
       averages.sort(function(a, b) {
         if (a.pct < b.pct) {
@@ -196,32 +176,27 @@ async function transform() {
         }
         return 0;
       });
-      promises.push(poll.update({averages: averages, averages_length: averages.length}));
+      await poll.update({averages: averages, averages_length: averages.length});
     }
-    return Promise.all(promises);
   }
 
   console.log('Updating running averages national polls...');
   await models.Poll.findAll({
     where: { state: null, party: 'DEM', answers_length: { [models.Sequelize.Op.gt]: 2 } },
     order: [['end_date', 'DESC'], ['start_date', 'DESC'], ['poll_id', 'DESC'], ['question_id', 'DESC']]
-  }).then(function(polls) {
-    return calculateAverages(polls);
+  }).then(async function(polls) {
+    await calculateAverages(polls);
   });
 
   console.log('Updating running averages for states...');
-  await models.State.findAll().then(function(states) {
-    const promises = [];
+  await models.State.findAll().then(async function(states) {
     for (let state of states) {
-      promises.push(models.Poll.findAll({
+      const polls = await models.Poll.findAll({
         where: { state: state.state, party: 'DEM', answers_length: { [models.Sequelize.Op.gt]: 2 } },
         order: [['end_date', 'DESC'], ['start_date', 'DESC'], ['poll_id', 'DESC'], ['question_id', 'DESC']]
-      }).then(function(polls) {
-        console.log('    ' + state.state);
-        return calculateAverages(polls);
-      }));
+      });
+      await calculateAverages(polls);
     }
-    return Promise.all(promises);
   });
 
   const generateSparkline = function(state, candidate, data) {
@@ -262,8 +237,7 @@ async function transform() {
   await models.Poll.findAll({
     where: { state: null, party: 'DEM', answers_length: { [models.Sequelize.Op.gt]: 2 } },
     order: [['end_date', 'ASC'], ['start_date', 'ASC'], ['poll_id', 'ASC'], ['question_id', 'ASC']]
-  }).then(function(polls) {
-    const promises = [];
+  }).then(async function(polls) {
     const data = {};
     for (let poll of polls) {
       for (let average of poll.averages) {
@@ -272,41 +246,29 @@ async function transform() {
       }
     }
     for (let candidate in data) {
-      promises.push(generateSparkline('national', candidate, data[candidate]));
+      await generateSparkline('national', candidate, data[candidate]);
     }
-    return promises.reduce((sequence, promise) => {
-      return sequence.then(results => promise.then(result => [...results, result]));
-    }, Promise.resolve([]));
   });
 
   console.log('Generating sparkline charts for the states...');
-  await models.State.findAll().then(function(states) {
-    const promises = [];
+  await models.State.findAll().then(async function(states) {
     for (let state of states) {
-      promises.push(models.Poll.findAll({
+      console.log('    ' + state.state);
+      const polls = await models.Poll.findAll({
         where: { state: state.state, party: 'DEM', answers_length: { [models.Sequelize.Op.gt]: 2 } },
         order: [['end_date', 'ASC'], ['start_date', 'ASC'], ['poll_id', 'ASC'], ['question_id', 'ASC']]
-      }).then(function(polls) {
-        console.log('    ' + state.state);
-        const promises = [];
-        const data = {};
-        for (let poll of polls) {
-          for (let average of poll.averages) {
-            data[average.candidate_name] = data[average.candidate_name] || [];
-            data[average.candidate_name].push(average.pct);
-          }
+      });
+      const data = {};
+      for (let poll of polls) {
+        for (let average of poll.averages) {
+          data[average.candidate_name] = data[average.candidate_name] || [];
+          data[average.candidate_name].push(average.pct);
         }
-        for (let candidate in data) {
-          promises.push(generateSparkline(state.state, candidate, data[candidate]));
-        }
-        return promises.reduce((sequence, promise) => {
-          return sequence.then(results => promise.then(result => [...results, result]));
-        }, Promise.resolve([]));
-      }));
+      }
+      for (let candidate in data) {
+        await generateSparkline(state.state, candidate, data[candidate]);
+      }
     }
-    return promises.reduce((sequence, promise) => {
-      return sequence.then(results => promise.then(result => [...results, result]));
-    }, Promise.resolve([]));
   });
 }
 

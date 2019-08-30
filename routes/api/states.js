@@ -6,12 +6,11 @@ const models = require('../../models');
 const interceptors = require('../interceptors');
 const helpers = require('../helpers');
 
-router.get('/', interceptors.requireAdmin, function(req, res, next) {
-  models.State.paginate({
-    page: req.query.page || 1,
-    order: [['state', 'ASC']]
-  }).then(function({docs, pages, total}) {
-    res.json(docs.map(d => d.toJSON()));
+router.get('/', function(req, res, next) {
+  models.State.findAll({
+    order: [['primary_date', 'ASC'], ['state', 'ASC']]
+  }).then(function(states) {
+    res.json(states);
   });
 });
 
