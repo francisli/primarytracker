@@ -1,3 +1,22 @@
+<table class="candidates table table-striped" *ngIf="polls && polls.length > 0">
+  <thead>
+    <tr>
+      <th><span class="spacer spacer--candidate">Candidate</span></th>
+    </tr>
+  </thead>
+  <tbody>
+    <ng-container *ngFor="let ranking of rankings; index as i;">
+      <tr *ngIf="i < numVisible">
+        <td><span class="spacer spacer--candidate">{{i+1}}. {{ranking.answer}}<pre>&nbsp;</pre></span></td>
+      </tr>
+    </ng-container>
+    <tr *ngIf="rankings.length > numVisible">
+      <td [colSpan]="3 + polls.length + (paginationLink ? 1 : 0)">
+        <a tabindex="0" (click)="showMoreCandidates()">Show more...</a>
+      </td>
+    </tr>
+  </tbody>
+</table>
 <div class="table-responsive" *ngIf="polls && polls.length > 0">
   <table class="table table-striped">
     <thead>
@@ -12,10 +31,11 @@
           <span class="spacer spacer--poll"></span>
           <span class="poll">
             <span class="poll__date text-muted">{{poll.start_date|date:'MMM d'}}-<span *ngIf="(poll.start_date|date:'MMM')==(poll.end_date|date:'MMM')">{{poll.end_date|date:'d, y'}}</span><span *ngIf="(poll.start_date|date:'MMM')!=(poll.end_date|date:'MMM')">{{poll.end_date|date:'MMM d, y'}}</span></span>
-            <span class="poll__pollster"><span class="rating">{{poll.pollster?.pollster_rating?.fte_grade}}</span> {{poll.pollster?.display_name}}</span>
+            <span class="poll__pollster"><span class="rating" [class.rating--none]="!poll.pollster?.pollster_rating?.fte_grade">{{poll.pollster?.pollster_rating?.fte_grade || '&nbsp;'}}</span>&nbsp;<a [href]="poll.url" target="_blank">{{poll.pollster?.display_name}}</a></span>
             <pre class="poll__sample">{{poll.sample_size|number}} {{poll.population}}</pre>
           </span>
         </th>
+        <th *ngIf="paginationLink"></th>
       </tr>
     </thead>
     <tbody>
@@ -30,11 +50,15 @@
           <td *ngFor="let pct of ranking.polls">
             <span class="spacer spacer--poll"><pre>{{pct|number:'1.0-1'}}<span class="text-muted">%</span></pre></span>
           </td>
+          <td *ngIf="i == 0 && paginationLink" [rowSpan]="numVisible" class="load-more">
+            <span class="spacer spacer--load-more"></span>
+            <a class="load-more" tabindex="0" (click)="loadMorePolls()">Load more</a>
+          </td>
         </tr>
       </ng-container>
       <tr *ngIf="rankings.length > numVisible">
-        <td [colSpan]="3 + polls.length">
-          <a tabindex="0" (click)="showMore()">Show more...</a>
+        <td [colSpan]="3 + polls.length + (paginationLink ? 1 : 0)">
+          <a tabindex="0" (click)="showMoreCandidates()">Show more...</a>
         </td>
       </tr>
     </tbody>

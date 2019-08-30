@@ -233,6 +233,7 @@ async function transform() {
     const chart = anychart.sparkline(data);
     chart.bounds(0, 0, 240, 60);
     chart.container('container');
+    chart.stroke('black');
     chart.background().fill("#00000000");
     chart.draw();
 

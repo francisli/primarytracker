@@ -17,6 +17,7 @@ import find from 'lodash/find';
 export class PollsComponent {
   @Input() state: string = null;
   polls: any[] = null;
+  paginationLink: string = null;
   rankings: any[] = null;
   numVisible = 3;
 
@@ -27,21 +28,42 @@ export class PollsComponent {
     if (this.state) {
       params = new HttpParams().set('state', this.state);
     }
-    this.api.polls.index(params).subscribe(response => {
+    this.api.polls.index(params).subscribe(response => this.handleResponse(response));
+  }
+
+  handleResponse(response: any) {
+    if (this.polls) {
+      this.polls = this.polls.concat(response.body);
+      for (let poll of response.body) {
+        for (let ranking of this.rankings) {
+          let answer = find(poll.answers, {candidate_name: ranking.candidate_name}) as any || {};
+          ranking.polls = ranking.polls || [];
+          ranking.polls.push(answer.pct);
+        }
+      }
+    } else {
       this.polls = response.body;
       if (this.polls.length > 0) {
         let rankings = cloneDeep(this.polls[0].averages);
         //// collect poll percentages for each ranked candidate
         for (let poll of this.polls) {
           for (let ranking of rankings) {
-            let answer = find(poll.answers, {candidate_name: ranking.candidate_name}) as any;
+            let answer = find(poll.answers, {candidate_name: ranking.candidate_name}) as any || {};
             ranking.polls = ranking.polls || [];
             ranking.polls.push(answer.pct);
           }
         }
         this.rankings = rankings;
       }
-    });
+    }
+    this.paginationLink = this.api.parsePaginationLink(response.headers.get('Link')).next;
+  }
+
+  loadMorePolls() {
+    if (this.paginationLink) {
+      this.api.get(this.paginationLink).subscribe(response => this.handleResponse(response));
+      this.paginationLink = null;
+    }
   }
 
   sparklinePath(candidate: string) {
@@ -55,7 +77,7 @@ export class PollsComponent {
     return path;
   }
 
-  showMore() {
+  showMoreCandidates() {
     if (this.numVisible < 10) {
       this.numVisible = 10;
     } else {
