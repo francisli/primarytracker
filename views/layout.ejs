@@ -10,6 +10,15 @@
     <script type="application/javascript" src="/libraries/jquery/jquery.min.js"></script>
     <script type="application/javascript" src="/libraries/bootstrap/js/bootstrap.bundle.min.js"></script>
     <% if (locals.head) { %><%- head %><% } %>
+    <% if (process.env.GOOGLE_ANALYTICS_ID) { %>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=<%= process.env.GOOGLE_ANALYTICS_ID %>"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', '<%= process.env.GOOGLE_ANALYTICS_ID %>');
+    </script>
+    <% } %>
   </head>
   <body>
     <% if (flash.info || flash.error) { %>
