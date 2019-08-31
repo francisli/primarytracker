@@ -45,7 +45,7 @@ although it could be adapted to handle any year/party.
 6. Open a command-line shell, change into your repo directory, and execute this command:
 
    ```
-   $ npm run dcup
+   $ bin/up
    ```
 
    It will take a while the first time you run this command to build the "images" to
@@ -64,7 +64,7 @@ although it could be adapted to handle any year/party.
    this command to log in to the running server container:
 
    ```
-   $ npm run dcexec
+   $ docker-compose exec server bash -l
    ```
 
    Whenever the server container is running, you can execute this command to log in
@@ -100,14 +100,14 @@ although it could be adapted to handle any year/party.
    run the following command and wait for the output to report DONE:
 
    ```
-   $ npm run dcstop
+   $ bin/dcstop
    Stopping primarytracker_db_1          ... done
    Stopping primarytracker_server_1      ... done
    Stopping primarytracker_mailcatcher_1 ... done
    ```
 
 10. That's it! After all this setup is complete, the only command you need to run to get
-started again is the ```docker-compose up``` command.
+started again is the ```bin/up``` command.
 
 ## Docker Troubleshooting
 

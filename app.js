@@ -56,6 +56,7 @@ i18n.configure({
 app.use(helpers.assetHelpers);
 app.use(i18n.init);
 app.use(function(req, res, next) {
+  res.set({'Cache-Control': 'private, max-age=0'});
   res.locals.flash = req.flash();
   res.locals.currentUser = req.user;
   next();
