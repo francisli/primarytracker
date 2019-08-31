@@ -2,12 +2,43 @@
 
 const AWS = require('aws-sdk');
 const fs = require('fs-extra');
+const https = require('https');
 const inflection = require('inflection');
 const _ = require('lodash');
 const mime = require('mime-types');
 const path = require('path');
 const querystring = require('querystring');
 
+
+module.exports.purgeCache = function() {
+  const promise = new Promise(function(resolve, reject) {
+    const request = https.request({
+      hostname: 'api.cloudflare.com',
+      port: 443,
+      path: `/client/v4/zones/${process.env.CLOUDFLARE_ZONE}/purge_cache`,
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Auth-Email': process.env.CLOUDFLARE_EMAIL,
+        'X-Auth-Key': process.env.CLOUDFLARE_KEY
+      }
+    }, function(response) {
+      response.on('data', function(data) {
+        process.stdout.write(data);
+      });
+      response.on('end', function() {
+        console.log('');
+        resolve();
+      });
+    });
+    request.on('error', function(e) {
+      reject(e);
+    });
+    request.write(JSON.stringify({purge_everything: true}));
+    request.end();
+  });
+  return promise;
+};
 
 module.exports.setPaginationHeaders = function(req, res, page, pages, total) {
   const baseURL = `${process.env.BASE_URL}${req.baseUrl}${req.path}?`;

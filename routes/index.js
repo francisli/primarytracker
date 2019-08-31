@@ -8,6 +8,7 @@ const models = require('../models');
 
 router.get('/', function(req, res, next) {
   const webpackStats = JSON.parse(fs.readFileSync('./client/webpack-stats.json'));
+  res.set({'Cache-Control': 'public, max-age=3600'});
   res.render('index', {
     webpackStats: webpackStats
   });

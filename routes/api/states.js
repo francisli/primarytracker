@@ -10,6 +10,7 @@ router.get('/', function(req, res, next) {
   models.State.findAll({
     order: [['primary_date', 'ASC'], ['state', 'ASC']]
   }).then(function(states) {
+    res.set({'Cache-Control': 'public, max-age=3600'});    
     res.json(states);
   });
 });

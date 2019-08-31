@@ -7,6 +7,9 @@ services:
     image: francisli/primarytracker
     command: bash -l -c "bin/cron"
     environment:
+      - CLOUDFLARE_EMAIL=${CLOUDFLARE_EMAIL}
+      - CLOUDFLARE_KEY=${CLOUDFLARE_KEY}
+      - CLOUDFLARE_ZONE=${CLOUDFLARE_ZONE}
       - DATABASE_URL=postgres://postgres:@db/app
       - NODE_ENV=production
     depends_on:
@@ -25,7 +28,11 @@ services:
       - AWS_S3_BUCKET_REGION=${AWS_S3_BUCKET_REGION}
       - BASE_HOST=${BASE_HOST}
       - BASE_URL=${BASE_URL}
+      - CLOUDFLARE_EMAIL=${CLOUDFLARE_EMAIL}
+      - CLOUDFLARE_KEY=${CLOUDFLARE_KEY}
+      - CLOUDFLARE_ZONE=${CLOUDFLARE_ZONE}
       - DATABASE_URL=postgres://postgres@db/app
+      - GOOGLE_ANALYTICS_ID=${GOOGLE_ANALYTICS_ID}
       - NODE_ENV=production
       - PORT=3000
       - SESSION_SECRET=${SESSION_SECRET}

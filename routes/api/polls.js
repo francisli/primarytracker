@@ -20,6 +20,7 @@ router.get('/', function(req, res, next) {
     include: [{model: models.Pollster, as: 'pollster', include: ['pollster_rating']}]
   }).then(function({docs, pages, total}) {
     helpers.setPaginationHeaders(req, res, page, pages, total);
+    res.set({'Cache-Control': 'public, max-age=3600'});
     res.json(docs.map(d => d.toJSON()));
   });
 });

@@ -41,12 +41,12 @@ app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use(express.static(path.join(__dirname, 'public')));
-app.use('/client', express.static(path.join(__dirname, 'dist')));
-app.use('/libraries/bootstrap', express.static(path.join(__dirname, 'node_modules/bootstrap/dist')));
-app.use('/libraries/cleave', express.static(path.join(__dirname, 'node_modules/cleave.js/dist')));
-app.use('/libraries/fontawesome', express.static(path.join(__dirname, 'node_modules/@fortawesome/fontawesome-free')));
-app.use('/libraries/jquery', express.static(path.join(__dirname, 'node_modules/jquery/dist')));
+app.use(express.static(path.join(__dirname, 'public'), { maxAge: '1h' }));
+app.use('/client', express.static(path.join(__dirname, 'dist'), { maxAge: '1h' }));
+app.use('/libraries/bootstrap', express.static(path.join(__dirname, 'node_modules/bootstrap/dist'), { maxAge: '1h' }));
+app.use('/libraries/cleave', express.static(path.join(__dirname, 'node_modules/cleave.js/dist'), { maxAge: '1h' }));
+app.use('/libraries/fontawesome', express.static(path.join(__dirname, 'node_modules/@fortawesome/fontawesome-free'), { maxAge: '1h' }));
+app.use('/libraries/jquery', express.static(path.join(__dirname, 'node_modules/jquery/dist'), { maxAge: '1h' }));
 
 i18n.configure({
   locales: ['en'],
