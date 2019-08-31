@@ -1,3 +1,10 @@
+<table class="table table-striped" *ngIf="polls && polls.length == 0">
+  <thead>
+    <tr>
+      <th>No polls yet.</th>
+    </tr>
+  </thead>
+</table>
 <table class="candidates table table-striped" *ngIf="polls && polls.length > 0">
   <thead>
     <tr>
