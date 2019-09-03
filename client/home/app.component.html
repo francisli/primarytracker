@@ -27,7 +27,7 @@
       </div>
       <app-polls></app-polls>
       <ng-container *ngFor="let state of states">
-        <div class="header">
+        <div [id]="state.state" class="header">
           <h2>{{state.state}}</h2>
           <div class="header__box header__box--primary">
             <div class="header__box__top">{{state.primary_type}}</div>
@@ -51,6 +51,17 @@
         </div>
         <app-polls [state]="state.state"></app-polls>
       </ng-container>
+      <div class="navbar-light">
+        <div class="navbar-menu">
+          <button (click)="showMenu=!showMenu" class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarHeader" aria-controls="navbarHeader" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="dropdown-menu" [class.d-block]="showMenu">
+            <a (click)="onJump()" class="dropdown-item" href="#top">Top</a>
+            <a *ngFor="let state of states" (click)="onJump()" class="dropdown-item" [href]="'#' + state.state.replace(' ', '%20')">{{state.state}}</a>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>

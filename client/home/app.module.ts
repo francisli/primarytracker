@@ -1,3 +1,4 @@
+import { Location, LocationStrategy, PathLocationStrategy } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -7,7 +8,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { AppComponent } from './app.component';
 import { PollsComponent } from './polls.component';
 
-import { ApiService } from '../shared/services';
+import { ApiService, NavigationService } from '../shared/services';
 
 
 @NgModule({
@@ -23,6 +24,8 @@ import { ApiService } from '../shared/services';
   ],
   providers: [
     ApiService,
+    Location, {provide: LocationStrategy, useClass: PathLocationStrategy},
+    NavigationService
   ],
   bootstrap: [
     AppComponent
