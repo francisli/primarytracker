@@ -11,7 +11,7 @@ router.get('/', function(req, res, next) {
   models.Poll.paginate({
     page: page,
     paginate: 5,
-    order: [['end_date', 'DESC'], ['start_date', 'DESC'], ['poll_id', 'DESC'], ['question_id', 'DESC']],
+    order: [['end_date', 'DESC'], ['created_at', 'DESC'], ['start_date', 'DESC'], ['poll_id', 'DESC'], ['question_id', 'DESC']],
     where: {
       state: req.query.state ? req.query.state : null,
       party: 'DEM',

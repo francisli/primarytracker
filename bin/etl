@@ -197,7 +197,7 @@ async function transform() {
   console.log('Updating running averages national polls...');
   await models.Poll.findAll({
     where: { state: null, party: 'DEM', answers_length: { [models.Sequelize.Op.gt]: 2 } },
-    order: [['end_date', 'DESC'], ['start_date', 'DESC'], ['poll_id', 'DESC'], ['question_id', 'DESC']]
+    order: [['end_date', 'DESC'], ['created_at', 'DESC'], ['start_date', 'DESC'], ['poll_id', 'DESC'], ['question_id', 'DESC']],
   }).then(async function(polls) {
     await calculateAverages(polls);
   });
@@ -207,7 +207,7 @@ async function transform() {
     for (let state of states) {
       const polls = await models.Poll.findAll({
         where: { state: state.state, party: 'DEM', answers_length: { [models.Sequelize.Op.gt]: 2 } },
-        order: [['end_date', 'DESC'], ['start_date', 'DESC'], ['poll_id', 'DESC'], ['question_id', 'DESC']]
+        order: [['end_date', 'DESC'], ['created_at', 'DESC'], ['start_date', 'DESC'], ['poll_id', 'DESC'], ['question_id', 'DESC']],
       });
       await calculateAverages(polls);
     }
@@ -250,7 +250,7 @@ async function transform() {
   console.log('Generating sparkline charts for the national running average...');
   await models.Poll.findAll({
     where: { state: null, party: 'DEM', answers_length: { [models.Sequelize.Op.gt]: 2 } },
-    order: [['end_date', 'ASC'], ['start_date', 'ASC'], ['poll_id', 'ASC'], ['question_id', 'ASC']]
+    order: [['end_date', 'ASC'], ['created_at', 'ASC'], ['start_date', 'ASC'], ['poll_id', 'ASC'], ['question_id', 'ASC']],
   }).then(async function(polls) {
     const data = {};
     for (let poll of polls) {
@@ -270,7 +270,7 @@ async function transform() {
       console.log('    ' + state.state);
       const polls = await models.Poll.findAll({
         where: { state: state.state, party: 'DEM', answers_length: { [models.Sequelize.Op.gt]: 2 } },
-        order: [['end_date', 'ASC'], ['start_date', 'ASC'], ['poll_id', 'ASC'], ['question_id', 'ASC']]
+        order: [['end_date', 'ASC'], ['created_at', 'ASC'], ['start_date', 'ASC'], ['poll_id', 'ASC'], ['question_id', 'ASC']],
       });
       const data = {};
       for (let poll of polls) {
