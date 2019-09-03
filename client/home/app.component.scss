@@ -3,7 +3,7 @@
 
 .navbar-menu {
   position: fixed;
-  z-index: 3;
+  z-index: 4;
   top: .5rem;
   right: 1rem;
 }
@@ -25,7 +25,7 @@ app-polls {
 
 .header {
   position: absolute;
-  z-index: 2;
+  z-index: 3;
 }
 
 .header__box {

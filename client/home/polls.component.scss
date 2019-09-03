@@ -12,14 +12,27 @@ th {
   padding-bottom: .25rem;
 }
 
+.table-hover tbody tr:hover {
+  background-color: #ffc10740 !important
+}
+
+td.load-more {
+  background-color: white;
+}
+
 td {
   font-size: .75rem;
   line-height: .875rem;
 }
 
+td.hover {
+  background-color: #ffc10740 !important
+}
+
 pre {
   display: inline;
   margin: 0;
+  cursor: default;
 }
 
 a {
@@ -29,7 +42,7 @@ a {
 .candidates {
   position: absolute;
   background: white;
-  z-index: 1;
+  z-index: 2;
 }
 
 td.sparkline {
@@ -61,6 +74,7 @@ a.load-more {
 .poll {
   display: block;
   position: absolute;
+  z-index: 1;
   bottom: 0;
   left: 100%;
   padding-bottom: .25rem;
@@ -83,6 +97,22 @@ a.load-more {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.ranking {
+  display: inline-block;
+  border: 1px solid #212529;
+  border-radius: 4px;
+  margin-right: .5rem;
+  vertical-align: bottom;
+  width: 1.5rem;
+  text-align: center;
+  line-height: 1.125;
+  visibility: hidden;
+}
+
+.table-hover tbody tr:hover .ranking, td.hover .ranking {
+  visibility: visible;
 }
 
 .rating {
@@ -119,7 +149,7 @@ a.load-more {
 }
 
 .spacer--poll {
-  width: 60px;
+  width: 64px;
   text-align: right;
 }
 

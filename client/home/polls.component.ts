@@ -35,6 +35,7 @@ export class PollsComponent {
   paginationLink: string = null;
   rankings: any[] = null;
   numVisible = 3;
+  column: number = null;
 
   constructor(private api: ApiService) {}
 
@@ -71,7 +72,7 @@ export class PollsComponent {
           this.rankings.push(ranking);
         }
         ranking.polls = ranking.polls || [];
-        ranking.polls.push(answer.pct);
+        ranking.polls.push(answer);
       }
       for (let ranking of this.rankings) {
         let answer = find(poll.answers, {candidate_name: ranking.candidate_name}) as any;
