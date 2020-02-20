@@ -8,7 +8,8 @@ module.exports = (sequelize, DataTypes) => {
     primary_date: DataTypes.DATEONLY,
     primary_type: DataTypes.STRING,
     pledged_delegates: DataTypes.INTEGER,
-    automatic_delegates: DataTypes.INTEGER
+    automatic_delegates: DataTypes.INTEGER,
+    delegates: DataTypes.JSONB,
   }, {
     tableName: 'states',
     underscored: true

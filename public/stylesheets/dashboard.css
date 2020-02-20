@@ -2,6 +2,10 @@ body {
   font-size: .875rem;
 }
 
+a[tabindex] {
+  cursor: pointer;
+}
+
 label {
   font-weight: bold;
   color: #333;

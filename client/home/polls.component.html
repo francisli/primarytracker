@@ -1,68 +1,21 @@
-<table class="table table-striped" *ngIf="polls && polls.length == 0">
-  <thead>
-    <tr>
-      <th>No polls yet.</th>
-    </tr>
-  </thead>
-</table>
-<table class="candidates table table-striped" *ngIf="polls && polls.length > 0">
-  <thead>
-    <tr>
-      <th><span class="spacer spacer--candidate">Candidate</span></th>
-    </tr>
-  </thead>
-  <tbody>
-    <ng-container *ngFor="let ranking of rankings; index as i;">
-      <tr *ngIf="i < numVisible">
-        <td><span class="spacer spacer--candidate">{{i+1}}. {{ranking.answer}}<pre>&nbsp;</pre></span></td>
+<div *ngIf="!isPastPrimary || state?.showPolls">
+  <table class="table table-striped" *ngIf="polls && polls.length == 0">
+    <thead>
+      <tr>
+        <th>No polls yet.</th>
       </tr>
-    </ng-container>
-  </tbody>
-  <tfoot>
-    <tr *ngIf="rankings.length > numVisible">
-      <td [colSpan]="3 + polls.length + (paginationLink ? 1 : 0)">
-        <a tabindex="0" (click)="showMoreCandidates()">Show more...</a>
-      </td>
-    </tr>
-  </tfoot>
-</table>
-<div class="table-responsive" *ngIf="polls && polls.length > 0">
-  <table class="table table-hover table-striped">
+    </thead>
+  </table>
+  <table class="candidates table table-striped" *ngIf="polls && polls.length > 0">
     <thead>
       <tr>
         <th><span class="spacer spacer--candidate">Candidate</span></th>
-        <th><span class="spacer spacer--sparkline">Running Average</span></th>
-        <th>
-          <span class="spacer spacer--poll"></span>
-          <span class="poll">Last 5 average <span class="rating rating--none">&nbsp;</span></span>
-        </th>
-        <th *ngFor="let poll of polls">
-          <span class="spacer spacer--poll"></span>
-          <span class="poll">
-            <span class="poll__date text-muted">{{poll.start_date|date:'MMM d'}}-<span *ngIf="(poll.start_date|date:'MMM')==(poll.end_date|date:'MMM')">{{poll.end_date|date:'d, y'}}</span><span *ngIf="(poll.start_date|date:'MMM')!=(poll.end_date|date:'MMM')">{{poll.end_date|date:'MMM d, y'}}</span></span>
-            <span class="poll__pollster"><span class="rating" [class.rating--none]="!poll.pollster?.pollster_rating?.fte_grade">{{poll.pollster?.pollster_rating?.fte_grade || '&nbsp;'}}</span>&nbsp;<a [href]="poll.url" target="_blank">{{poll.pollster?.display_name}}</a></span>
-            <pre class="poll__sample">{{poll.sample_size|number}} {{poll.population}}</pre>
-          </span>
-        </th>
-        <th *ngIf="paginationLink"></th>
       </tr>
     </thead>
     <tbody>
       <ng-container *ngFor="let ranking of rankings; index as i;">
         <tr *ngIf="i < numVisible">
-          <td><span class="spacer spacer--candidate">{{i+1}}. {{ranking.answer}}</span></td>
-          <td class="sparkline">
-            <span class="spacer spacer--sparkline"></span>
-            <img [src]="sparklinePath(ranking.candidate_name)" class="sparkline">
-          </td>
-          <td><span class="spacer spacer--poll"><pre>{{ranking.pct|number:'1.0-1'}}<span class="text-muted">%</span></pre></span></td>
-          <td *ngFor="let answer of ranking.polls; index as col;" (mouseenter)="column = col" (mouseleave)="column = null" [class.hover]="column == col">
-            <span class="spacer spacer--poll"><pre class="ranking" *ngIf="answer?.pct && answer?.ranking"><span class="text-muted">#</span>{{answer.ranking}}</pre><pre *ngIf="answer?.pct"><span *ngIf="answer.pct < 10">&nbsp;</span>{{answer.pct|number:'1.0-1'}}<span class="text-muted">%</span></pre></span>
-          </td>
-          <td *ngIf="i == 0 && paginationLink" [rowSpan]="numVisible" class="load-more">
-            <span class="spacer spacer--load-more"></span>
-            <a class="load-more" tabindex="0" (click)="loadMorePolls()">Load more</a>
-          </td>
+          <td><span class="spacer spacer--candidate">{{i+1}}. {{ranking.answer}}<pre>&nbsp;</pre></span></td>
         </tr>
       </ng-container>
     </tbody>
@@ -74,4 +27,53 @@
       </tr>
     </tfoot>
   </table>
+  <div class="table-responsive" *ngIf="polls && polls.length > 0">
+    <table class="table table-hover table-striped">
+      <thead>
+        <tr>
+          <th><span class="spacer spacer--candidate">Candidate</span></th>
+          <th><span class="spacer spacer--sparkline">Running Average</span></th>
+          <th>
+            <span class="spacer spacer--poll"></span>
+            <span class="poll">Last 5 average <span class="rating rating--none">&nbsp;</span></span>
+          </th>
+          <th *ngFor="let poll of polls">
+            <span class="spacer spacer--poll"></span>
+            <span class="poll">
+              <span class="poll__date text-muted">{{poll.start_date|date:'MMM d'}}-<span *ngIf="(poll.start_date|date:'MMM')==(poll.end_date|date:'MMM')">{{poll.end_date|date:'d, y'}}</span><span *ngIf="(poll.start_date|date:'MMM')!=(poll.end_date|date:'MMM')">{{poll.end_date|date:'MMM d, y'}}</span></span>
+              <span class="poll__pollster"><span class="rating" [class.rating--none]="!poll.pollster?.pollster_rating?.fte_grade">{{poll.pollster?.pollster_rating?.fte_grade || '&nbsp;'}}</span>&nbsp;<a [href]="poll.url" target="_blank">{{poll.pollster?.display_name}}</a></span>
+              <pre class="poll__sample">{{poll.sample_size|number}} {{poll.population}}</pre>
+            </span>
+          </th>
+          <th *ngIf="paginationLink"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <ng-container *ngFor="let ranking of rankings; index as i;">
+          <tr *ngIf="i < numVisible">
+            <td><span class="spacer spacer--candidate">{{i+1}}. {{ranking.answer}}</span></td>
+            <td class="sparkline">
+              <span class="spacer spacer--sparkline"></span>
+              <img [src]="sparklinePath(ranking.candidate_name)" class="sparkline">
+            </td>
+            <td><span class="spacer spacer--poll"><pre>{{ranking.pct|number:'1.0-1'}}<span class="text-muted">%</span></pre></span></td>
+            <td *ngFor="let answer of ranking.polls; index as col;" (mouseenter)="column = col" (mouseleave)="column = null" [class.hover]="column == col">
+              <span class="spacer spacer--poll"><pre class="ranking" *ngIf="answer?.pct && answer?.ranking"><span class="text-muted">#</span>{{answer.ranking}}</pre><pre *ngIf="answer?.pct"><span *ngIf="answer.pct < 10">&nbsp;</span>{{answer.pct|number:'1.0-1'}}<span class="text-muted">%</span></pre></span>
+            </td>
+            <td *ngIf="i == 0 && paginationLink" [rowSpan]="numVisible" class="load-more">
+              <span class="spacer spacer--load-more"></span>
+              <a class="load-more" tabindex="0" (click)="loadMorePolls()">Load more</a>
+            </td>
+          </tr>
+        </ng-container>
+      </tbody>
+      <tfoot>
+        <tr *ngIf="rankings.length > numVisible">
+          <td [colSpan]="3 + polls.length + (paginationLink ? 1 : 0)">
+            <a tabindex="0" (click)="showMoreCandidates()">Show more...</a>
+          </td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
 </div>

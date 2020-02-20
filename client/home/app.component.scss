@@ -21,11 +21,34 @@
 app-polls {
   display: block;
   margin-bottom: 3em;
+  min-height: 128px;
+}
+
+a[tabindex] {
+  cursor: pointer;
 }
 
 .header {
   position: absolute;
+  left: 15px;
+  right: 15px;
   z-index: 3;
+}
+
+.header__tabs {
+  font-size: .875rem;
+}
+
+.header__tabs__selected {
+  color: #666;
+}
+
+.header__row {
+  overflow-x: scroll;
+}
+
+.header__row__content {
+  white-space: nowrap;
 }
 
 .header__box {
@@ -76,6 +99,18 @@ app-polls {
 
     &:last-child {
       border-left-color: transparent;
+    }
+  }
+}
+
+.header__box--results {
+  .header__box__bottom {
+    display: inline-block;
+    border-right-color: transparent;
+    width: 80px;
+
+    &:last-child {
+      border-right-color: #dee2e6;
     }
   }
 }

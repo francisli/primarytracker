@@ -7,6 +7,7 @@ import inflection from 'inflection';
 import cloneDeep from 'lodash/cloneDeep';
 import filter from 'lodash/filter';
 import find from 'lodash/find';
+import moment from 'moment';
 
 const sortAnswers = function(a: any, b: any) {
   if (a.pct < b.pct) {
@@ -30,21 +31,28 @@ const sortAnswers = function(a: any, b: any) {
   styleUrls: ['./polls.component.scss']
 })
 export class PollsComponent {
-  @Input() state: string = null;
+  @Input() state: any = null;
   polls: any[] = null;
   paginationLink: string = null;
   rankings: any[] = null;
   numVisible = 3;
   column: number = null;
 
-  constructor(private api: ApiService) {}
+  constructor(private api: ApiService) { }
 
   ngAfterViewInit() {
     let params = null;
     if (this.state) {
-      params = new HttpParams().set('state', this.state);
+      params = new HttpParams().set('state', this.state.state);
     }
     this.api.polls.index(params).subscribe(response => this.handleResponse(response));
+  }
+
+  get isPastPrimary() {
+    if (this.state) {
+      return moment(this.state.primary_date).isBefore(moment());
+    }
+    return false;
   }
 
   handleResponse(response: any) {
@@ -94,9 +102,9 @@ export class PollsComponent {
   }
 
   sparklinePath(candidate: string) {
-    let path = this.state;
-    if (path) {
-      path = `/images/sparklines/${inflection.dasherize(path.toLowerCase())}`;
+    let path;
+    if (this.state) {
+      path = `/images/sparklines/${inflection.dasherize(this.state.state.toLowerCase())}`;
     } else {
       path = '/images/sparklines/national';
     }

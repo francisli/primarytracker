@@ -33,6 +33,19 @@
           <input [(ngModel)]="record.automatic_delegates" [class.is-invalid]="error.messages|error:'automatic_delegates'" type="number" class="form-control" id="automatic_delegates" name="automatic_delegates">
           <div *ngIf="error.messages|error:'automatic_delegates'" class="invalid-feedback">{{(error.messages|error:'automatic_delegates').message}}</div>
         </div>
+        <div class="form-group">
+          <label for="pledged_delegates">Delegates</label>
+          <div class="form-inline">
+            <select #candidatesElement [(ngModel)]="delegate.candidate" name="delegate_candidate" class="form-control mr-2">
+              <option *ngFor="let candidate of candidates" [value]="candidate">{{candidate}}</option>
+            </select>
+            <input [(ngModel)]="delegate.count" type="number" class="form-control mr-2">
+            <button (click)="onAddDelegate(record)" class="btn btn-secondary" type="button">Add</button>
+          </div>
+          <ol *ngIf="record.delegates && record.delegates.length > 0" class="list-group mt-2">
+            <li *ngFor="let delegate of record.delegates" class="list-group-item"><a (click)="onRemoveDelegate(record, delegate)" tabindex="0">&times;</a> {{delegate.candidate}}: {{delegate.count}}</li>
+          </ol>
+        </div>
       </ng-template>
     </app-shared-form>
   </div>
