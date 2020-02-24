@@ -1,3 +1,4 @@
+
 import { Component } from '@angular/core';
 import { Location } from '@angular/common';
 
@@ -13,6 +14,8 @@ import moment from 'moment';
 export class AppComponent {
   now: any;
   states: any[] = null;
+  results: any[] = [];
+  showPolls = true;
   showMenu = false;
 
   constructor(private api: ApiService, private location: Location) {}
@@ -21,6 +24,21 @@ export class AppComponent {
     this.now = moment();
     this.api.states.index().subscribe(response => {
       this.states = response.body;
+      const candidates: any = {};
+      for (let state of this.states) {
+        for (let result of state.delegates) {
+          if (!candidates[result.candidate]) {
+            candidates[result.candidate] = 0;
+          }
+          candidates[result.candidate] += result.count;
+        }
+      }
+      const results = [];
+      for (let candidate in candidates) {
+        results.push({candidate, count: candidates[candidate]});
+      }
+      results.sort((a, b) => b.count - a.count);
+      this.results = results;
     });
   }
 

@@ -32,6 +32,7 @@ const sortAnswers = function(a: any, b: any) {
 })
 export class PollsComponent {
   @Input() state: any = null;
+  @Input() showPolls = true;
   polls: any[] = null;
   paginationLink: string = null;
   rankings: any[] = null;
@@ -46,13 +47,6 @@ export class PollsComponent {
       params = new HttpParams().set('state', this.state.state);
     }
     this.api.polls.index(params).subscribe(response => this.handleResponse(response));
-  }
-
-  get isPastPrimary() {
-    if (this.state) {
-      return moment(this.state.primary_date).isBefore(moment());
-    }
-    return false;
   }
 
   handleResponse(response: any) {

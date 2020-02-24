@@ -4,7 +4,15 @@
       <h1>Democratic Primary Polls Tracker</h1>
       <p class="about">Data from <a href="https://github.com/fivethirtyeight/data/tree/master/polls" target="_blank">FiveThirtyEight</a>. Source code on <a href="https://github.com/francisli/primarytracker" target="_blank">GitHub</a>. Feedback? <a href="https://github.com/francisli/primarytracker/issues">Create a new Issue.</a></p>
       <div class="header">
-        <h2>National</h2>
+        <h2>
+          National
+          <span class="header__tabs" *ngIf="showPolls">
+            <a (click)="showPolls=false" tabindex="0">Results</a>&nbsp;|&nbsp;<span class="header__tabs__selected">Polls</span>
+          </span>
+          <span class="header__tabs" *ngIf="!showPolls">
+            <span class="header__tabs__selected">Results</span>&nbsp;|&nbsp;<a (click)="showPolls=true" tabindex="0">Polls</a>
+          </span>
+        </h2>
         <div class="header__row">
           <div class="header__row__content">
             <div class="header__box">
@@ -26,10 +34,20 @@
                 <div class="header__box__bottom__text">764</div>
               </div>
             </div>
+            <ng-container *ngIf="results.length > 0 && !showPolls">
+              &nbsp;
+              <div class="header__box header__box--results">
+                <div class="header__box__top">Results</div>
+                <div *ngFor="let result of results" class="header__box__bottom">
+                  <div class="header__box__bottom__header">{{result.candidate}}</div>
+                  <div class="header__box__bottom__text">{{result.count}}</div>
+                </div>
+              </div>
+            </ng-container>
           </div>
         </div>
       </div>
-      <app-polls></app-polls>
+      <app-polls [showPolls]="showPolls"></app-polls>
       <ng-container *ngFor="let state of states">
         <div [id]="state.state" class="header">
           <div class="header__row">
@@ -62,7 +80,7 @@
                   <div class="header__box__bottom__text">{{state.automatic_delegates}}</div>
                 </div>
               </div>
-              <ng-container *ngIf="isPastPrimary(state) && state.delegates.length > 0">
+              <ng-container *ngIf="isPastPrimary(state) && state.delegates.length > 0 && !state.showPolls">
                 &nbsp;
                 <div class="header__box header__box--results">
                   <div class="header__box__top">Results</div>
@@ -75,7 +93,7 @@
             </div>
           </div>
         </div>
-        <app-polls [state]="state"></app-polls>
+        <app-polls [state]="state" [showPolls]="state.showPolls"></app-polls>
       </ng-container>
       <div class="navbar-light">
         <div class="navbar-menu">
