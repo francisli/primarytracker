@@ -3,17 +3,22 @@
     <div class="col">
       <h1>Democratic Primary Polls Tracker</h1>
       <p class="about">Data from <a href="https://github.com/fivethirtyeight/data/tree/master/polls" target="_blank">FiveThirtyEight</a>. Source code on <a href="https://github.com/francisli/primarytracker" target="_blank">GitHub</a>. Feedback? <a href="https://github.com/francisli/primarytracker/issues">Create a new Issue.</a></p>
-      <div class="header">
+      <div class="header header--national">
         <h2>
           National
-          <span class="header__tabs" *ngIf="showPolls">
-            <a (click)="showPolls=false" tabindex="0">Results</a>&nbsp;|&nbsp;<span class="header__tabs__selected">Polls</span>
-          </span>
-          <span class="header__tabs" *ngIf="!showPolls">
-            <span class="header__tabs__selected">Results</span>&nbsp;|&nbsp;<a (click)="showPolls=true" tabindex="0">Polls</a>
-          </span>
         </h2>
         <div class="header__row">
+          <div class="header__row__content">
+            <ng-container *ngIf="results.length > 0">
+              <div class="header__box header__box--results">
+                <div class="header__box__top">Results</div>
+                <div *ngFor="let result of results" [class]="'header__box__bottom header__box__bottom--' + result.candidate|lowercase">
+                  <div class="header__box__bottom__header">{{result.candidate}}</div>
+                  <div class="header__box__bottom__text">{{result.count}}</div>
+                </div>
+              </div>
+            </ng-container>
+          </div>
           <div class="header__row__content">
             <div class="header__box">
               <div class="header__box__top">Convention</div>
@@ -27,27 +32,17 @@
               <div class="header__box__top">Delegates</div>
               <div class="header__box__bottom">
                 <div class="header__box__bottom__header">Pledged</div>
-                <div class="header__box__bottom__text">3,768</div>
+                <div class="header__box__bottom__text">3,979</div>
               </div>
               <div class="header__box__bottom">
                 <div class="header__box__bottom__header">Super</div>
-                <div class="header__box__bottom__text">764</div>
+                <div class="header__box__bottom__text">771</div>
               </div>
             </div>
-            <ng-container *ngIf="results.length > 0 && !showPolls">
-              &nbsp;
-              <div class="header__box header__box--results">
-                <div class="header__box__top">Results</div>
-                <div *ngFor="let result of results" class="header__box__bottom">
-                  <div class="header__box__bottom__header">{{result.candidate}}</div>
-                  <div class="header__box__bottom__text">{{result.count}}</div>
-                </div>
-              </div>
-            </ng-container>
           </div>
         </div>
       </div>
-      <app-polls [showPolls]="showPolls"></app-polls>
+      <app-polls [showPolls]="true"></app-polls>
       <ng-container *ngFor="let state of states">
         <div [id]="state.state" class="header">
           <div class="header__row">
@@ -84,7 +79,7 @@
                 &nbsp;
                 <div class="header__box header__box--results">
                   <div class="header__box__top">Results</div>
-                  <div *ngFor="let result of state.delegates" class="header__box__bottom">
+                  <div *ngFor="let result of state.delegates" [class]="'header__box__bottom header__box__bottom--' + result.candidate|lowercase">
                     <div class="header__box__bottom__header">{{result.candidate}}</div>
                     <div class="header__box__bottom__text">{{result.count}}</div>
                   </div>

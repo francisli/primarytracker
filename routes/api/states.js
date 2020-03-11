@@ -52,6 +52,7 @@ router.get('/:id', interceptors.requireAdmin, function(req, res, next) {
 router.patch('/:id', interceptors.requireAdmin, function(req, res, next) {
   models.State.findByPk(req.params.id).then(function(state) {
     return state.update({
+      abbrev: req.body.abbrev,
       primary_date: req.body.primary_date,
       primary_type: req.body.primary_type,
       pledged_delegates: req.body.pledged_delegates,

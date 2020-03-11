@@ -5,6 +5,7 @@ const sequelizePaginate = require('sequelize-paginate')
 module.exports = (sequelize, DataTypes) => {
   const State = sequelize.define('State', {
     state: DataTypes.STRING,
+    abbrev: DataTypes.STRING,
     primary_date: DataTypes.DATEONLY,
     primary_type: DataTypes.STRING,
     pledged_delegates: DataTypes.INTEGER,

@@ -3,6 +3,7 @@
 const AnyChart = require('anychart');
 const AnyChartExport = require('anychart-nodejs');
 const csv = require('csv-parser');
+const fetch = require('node-fetch');
 const fs = require('fs');
 const https = require('https');
 const inflection = require('inflection');
@@ -301,3 +302,35 @@ const request = https.get('https://projects.fivethirtyeight.com/polls-page/presi
   });
   response.pipe(file);
 });
+
+console.log('Fetching latest results...');
+fetch('https://apps.npr.org/elections20-primaries/data/delegates.json')
+  .then(res => res.json())
+  .then(async data => {
+    for (let row of data.state.parties.Dem.states) {
+      const state = await models.State.findOne({where: {abbrev: row.state}});
+      if (state) {
+        let sum = 0;
+        let delegates = [];
+        for (let candidate of row.candidates) {
+          if (candidate.total > 0) {
+            sum += candidate.total;
+            delegates.push({
+              candidate: candidate.name,
+              count: candidate.total
+            });
+          }
+        }
+        if (sum > 0) {
+          delegates.sort((a, b) => b.count - a.count);
+          if (sum < state.pledged_delegates) {
+            delegates.splice(0, 0, {
+              candidate: 'Pending',
+              count: state.pledged_delegates - sum
+            });
+          }
+          await state.update({delegates})
+        }
+      }
+    }
+  });

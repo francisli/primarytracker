@@ -35,9 +35,14 @@ export class AppComponent {
       }
       const results = [];
       for (let candidate in candidates) {
-        results.push({candidate, count: candidates[candidate]});
+        if (candidate != 'Pending') {
+          results.push({candidate, count: candidates[candidate]});
+        }
       }
       results.sort((a, b) => b.count - a.count);
+      if (candidates['Pending']) {
+        results.splice(0, 0, {candidate: 'Pending', count: candidates['Pending']});
+      }
       this.results = results;
     });
   }

@@ -35,6 +35,10 @@ a[tabindex] {
   z-index: 3;
 }
 
+.header--national + app-polls {
+  margin-top: 8rem;
+}
+
 .header__tabs {
   font-size: .875rem;
 }
@@ -49,6 +53,7 @@ a[tabindex] {
 
 .header__row__content {
   white-space: nowrap;
+  margin-bottom: 1rem;
 }
 
 .header__box {
@@ -70,6 +75,10 @@ a[tabindex] {
   border-right: 1px solid #dee2e6;
   border-bottom: 1px solid #dee2e6;
   padding: .5rem;
+}
+
+.header__box__bottom--pending {
+  color: red;
 }
 
 .header__box__bottom__header {

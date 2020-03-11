@@ -11,6 +11,11 @@
           <div *ngIf="error.messages|error:'state'" class="invalid-feedback">{{(error.messages|error:'state').message}}</div>
         </div>
         <div class="form-group">
+          <label for="abbrev">Abbreviation</label>
+          <input [(ngModel)]="record.abbrev" [class.is-invalid]="error.messages|error:'abbrev'" type="text" class="form-control" id="abbrev" name="abbrev">
+          <div *ngIf="error.messages|error:'abbrev'" class="invalid-feedback">{{(error.messages|error:'abbrev').message}}</div>
+        </div>
+        <div class="form-group">
           <label for="primary_date">Primary Date</label>
           <input [(ngModel)]="record.primary_date" [class.is-invalid]="error.messages|error:'primary_date'" type="date" class="form-control" id="primary_date" name="primary_date">
           <div *ngIf="error.messages|error:'primary_date'" class="invalid-feedback">{{(error.messages|error:'primary_date').message}}</div>
